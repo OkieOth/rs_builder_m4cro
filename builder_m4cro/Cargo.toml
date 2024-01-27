@@ -2,6 +2,9 @@
 name = "builder_m4cro"
 version = "0.1.0"
 edition = "2021"
+description = "Simple derive macro to implement the builder pattern"
+license = "MIT OR Apache-2.0"
+
 
 [lib]
 proc-macro = true

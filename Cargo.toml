@@ -2,6 +2,6 @@
     resolver = "2"
 
 members = [
-    "builder-m4cro",
+    "builder_m4cro",
     "examples/simple",
 ]
