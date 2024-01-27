@@ -1,3 +1,6 @@
+[![ci](https://github.com/OkieOth/rs_observable/actions/workflows/rust.yml/badge.svg)](https://github.com/OkieOth/rs_builder_m4cro/actions/workflows/rust.yml)
+[![crates.io](https://img.shields.io/crates/v/rs_builder_m4cro.svg)](https://crates.io/crates/builder_m4cro)
+
 This is a simple derive macro to implement the builder pattern.
 
 
