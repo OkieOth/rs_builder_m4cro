@@ -1,0 +1,7 @@
+[package]
+name = "builder"
+version = "0.2.0"
+edition = "2021"
+
+[dependencies]
+builder_m4cro = { path = "../../builder_m4cro" }

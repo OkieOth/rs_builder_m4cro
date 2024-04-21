@@ -68,7 +68,7 @@ pub fn derive_builder(item: TokenStream) -> TokenStream {
             let methods_mandatory = data_struct.fields.iter()
             .filter(|field| { 
                 filter_option(field, false)
-             })            
+             })
             .map(|field| {
                 let field_name = field.ident.as_ref().unwrap();
 
@@ -171,6 +171,94 @@ pub fn derive_builder(item: TokenStream) -> TokenStream {
     output.into()
 }
 
+#[proc_macro_derive(BuilderFromDefault)]
+pub fn derive_builder_from_default(item: TokenStream) -> TokenStream {
+    // Parse the string representation
+    let  DeriveInput { ident, data,.. } = parse_macro_input!(item);
+
+    let builder_name = format_ident!("{}BuilderFromDefault", ident);
+
+    let builder_struct = match &data {
+        syn::Data::Struct(data_struct) => {
+            let fields = data_struct.fields.iter()
+            .map(|field| {
+                let field_name = field.ident.as_ref().unwrap();
+                let field_type = &field.ty;
+                quote! { #field_name: Option<#field_type>, }
+            });
+
+            quote! {
+                #[derive(Default, Debug)]
+                pub struct #builder_name {
+                    #(#fields)*
+                }
+            }
+        }
+        _ => panic!("BuilderFromDefault macro only supports structs"),
+    };
+
+    // Generate code for the builder methods
+    let builder_methods = match &data {
+        syn::Data::Struct(data_struct) => {
+            let methods = data_struct.fields.iter()
+            .map(|field| {
+                let field_name = field.ident.as_ref().unwrap();
+                let field_type = &field.ty;
+                quote! {
+                    pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
+                        self.#field_name = Some(#field_name);
+                        self
+                    }
+                }
+            });
+
+            let set_builder_values = data_struct.fields.iter()
+            .map(|field| {
+                let field_name = field.ident.as_ref().unwrap();
+                quote! {
+                    if self.#field_name.is_some() {
+                        ret.#field_name = self.#field_name.as_ref().unwrap().clone()
+                    };
+                }
+            });
+
+            quote! {
+                impl #builder_name {
+                    pub fn new() -> #builder_name {
+                        #builder_name::default()
+                    }
+
+                    #(#methods)*
+
+                    pub fn build(&self) -> #ident {
+                        let mut ret = #ident::default();
+
+                        #(#set_builder_values)*
+
+                        ret
+                    }
+                }
+            }
+        }
+        _ => panic!("Builder macro only supports structs"),
+    };
+
+    // Build the impl
+    let output = quote! {
+        impl #ident {
+            pub fn builder() -> #builder_name {
+                #builder_name::new()
+            }
+        }
+
+        #builder_struct
+
+        #builder_methods
+    };
+
+    // Return the generated impl
+    output.into()
+}
 
 
 #[cfg(test)]

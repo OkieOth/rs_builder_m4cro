@@ -3,5 +3,6 @@
 
 members = [
     "builder_m4cro",
-    "examples/simple",
+    "examples/builder_from_default",
+    "examples/builder",
 ]
