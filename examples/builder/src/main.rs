@@ -70,6 +70,12 @@ mod tests {
             s: Dummy{ a: "x".to_string(), u: 44},
         };
         assert_eq!(t2_1, t2_2);
+
+        let t1_3 = TestType::builder()
+        .build();
+
+        assert!(t1_3.is_err());
+
     }
 
 

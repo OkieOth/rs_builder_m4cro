@@ -1,10 +1,15 @@
 [![ci](https://github.com/OkieOth/rs_observable/actions/workflows/rust.yml/badge.svg)](https://github.com/OkieOth/rs_builder_m4cro/actions/workflows/rust.yml)
 [![crates.io](https://img.shields.io/crates/v/builder_m4cro.svg)](https://crates.io/crates/builder_m4cro)
 
-This is a simple derive macro to implement the builder pattern.
+This is a crate provides two simple macros:
+* Builder - an implementation of the factory pattern
+* BuilderFromDefault - factory pattern implementation that relies on the
+    implementation of the Default trait, to provide customized init values
 
 
-For more examples look at `examples/simple/src/main.rs`
+For more examples look at:
+* Builder: `examples/builder/src/main.rs`
+* BuilderFromDefault: `examples/builder_from_default/src/main.rs`
 
 ```rust
 use builder_m4cro::Builder;
@@ -87,5 +92,7 @@ impl TestTypeBuilder {
 # https://github.com/dtolnay/cargo-expand
 cargo install cargo-expand
 
-
+# e. g. ...
+cd examples/result_builder
+cargo expand
 ```
