@@ -45,16 +45,16 @@ impl TestTypeBuilder {
         self.a_unsigned = Some(a_unsigned);
         self
     }
-    pub fn a_string(&mut self, a_string: String) -> &mut Self {
-        self.a_string = Some(a_string);
+    pub fn a_string(&mut self, a_string: &str) -> &mut Self {
+        self.a_string = Some(a_string.to_string());
         self
     }
     pub fn a_opt_unsigned(&mut self, a_opt_unsigned: u32) -> &mut Self {
         self.a_opt_unsigned = Some(a_opt_unsigned);
         self
     }
-    pub fn a_opt_string(&mut self, a_opt_string: String) -> &mut Self {
-        self.a_opt_string = Some(a_opt_string);
+    pub fn a_opt_string(&mut self, a_opt_string: &str) -> &mut Self {
+        self.a_opt_string = Some(a_opt_string.to_string());
         self
     }
     pub fn build(&self) -> Result<TestType, String> {
