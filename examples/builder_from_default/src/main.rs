@@ -18,20 +18,21 @@ impl TestType {
 pub fn main() {
     let t1 = TestType::builder()
         .a_unsigned(23)
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .build();
 
     print!("t1: {:#?}", t1);
 
     let t2 = TestType::builder()
         .a_unsigned(24)
-        .a_opt_unsigned(Some(13))
-        .a_string("xxx".to_string())
+        .a_opt_unsigned(13)
+        .a_string("xxx")
         .build();
 
     print!("t2: {:#?}", t2);
 }
 
+#[cfg(test)]
 mod tests {
     use builder_m4cro::BuilderFromDefault;
 
@@ -124,7 +125,7 @@ mod tests {
         }
 
         let t1_1 = TestType::builder()
-        .o_v(Some(vec![1, 2, 3]))
+        .o_v(vec![1, 2, 3])
         .v(vec![7, 6, 8])
         .build();
 

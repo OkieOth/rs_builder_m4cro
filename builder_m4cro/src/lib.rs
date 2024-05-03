@@ -21,6 +21,17 @@ fn filter_option(field: &&syn::Field, is_optional: bool) -> bool {
     return ! is_optional;
 }
 
+fn is_string(field: &&syn::Field) -> bool {
+    let field_type = &field.ty;
+    if let syn::Type::Path(type_path) = field_type {
+        if let Some(segment) = type_path.path.segments.last() {
+            return segment.ident.to_string() == "String";
+        }
+    };
+    return false;
+}
+
+
 #[proc_macro_derive(Builder)]
 pub fn derive_builder(item: TokenStream) -> TokenStream {
     // Construct a string representation of the type definition
@@ -71,12 +82,20 @@ pub fn derive_builder(item: TokenStream) -> TokenStream {
              })
             .map(|field| {
                 let field_name = field.ident.as_ref().unwrap();
-
                 let field_type = &field.ty;
-                quote! {
-                    pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
-                        self.#field_name = Some(#field_name);
-                        self
+                if is_string(&field) {
+                    quote! {
+                        pub fn #field_name(&mut self, #field_name: &str) -> &mut Self {
+                            self.#field_name = Some(#field_name.to_string());
+                            self
+                        }
+                    }
+                } else {
+                    quote! {
+                        pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
+                            self.#field_name = Some(#field_name);
+                            self
+                        }
                     }
                 }
             });
@@ -102,10 +121,19 @@ pub fn derive_builder(item: TokenStream) -> TokenStream {
                     }
                 };
 
-                quote! {
-                    pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
-                        self.#field_name = Some(#field_name);
-                        self
+                if is_string(&field) {
+                    quote! {
+                        pub fn #field_name(&mut self, #field_name: &str) -> &mut Self {
+                            self.#field_name = Some(#field_name.to_string());
+                            self
+                        }
+                    }
+                } else {
+                    quote! {
+                        pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
+                            self.#field_name = Some(#field_name);
+                            self
+                        }
                     }
                 }
             });
@@ -203,11 +231,58 @@ pub fn derive_builder_from_default(item: TokenStream) -> TokenStream {
             let methods = data_struct.fields.iter()
             .map(|field| {
                 let field_name = field.ident.as_ref().unwrap();
-                let field_type = &field.ty;
-                quote! {
-                    pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
-                        self.#field_name = Some(#field_name);
-                        self
+                let mut field_type = &field.ty;
+ 
+                let mut is_optional = false;
+
+                if filter_option(&field, true) {
+                    // needed to separate for vector types
+                    if let syn::Type::Path(type_path) = field_type {
+                        if let Some(segment) = type_path.path.segments.last() {
+                            if let syn::PathArguments::AngleBracketed(args) = &segment.arguments {
+                                if let Some(arg) = args.args.iter().next() {
+                                    if let syn::GenericArgument::Type(inner_type) = arg {
+                                        // At this point, 'inner_type' represents the inner type T
+                                        is_optional = true;
+                                        field_type = inner_type;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+
+                if is_optional {
+                    if is_string(&field) {
+                        quote! {
+                            pub fn #field_name(&mut self, #field_name: &str) -> &mut Self {
+                                self.#field_name = Some(Some(#field_name.to_string()));
+                                self
+                            }
+                        }
+                    } else {
+                        quote! {
+                            pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
+                                self.#field_name = Some(Some(#field_name));
+                                self
+                            }
+                        }
+                    }
+                } else {
+                    if is_string(&field) {
+                        quote! {
+                            pub fn #field_name(&mut self, #field_name: &str) -> &mut Self {
+                                self.#field_name = Some(#field_name.to_string());
+                                self
+                            }
+                        }
+                    } else {
+                        quote! {
+                            pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
+                                self.#field_name = Some(#field_name);
+                                self
+                            }
+                        }
                     }
                 }
             });
