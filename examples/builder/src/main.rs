@@ -17,7 +17,7 @@ impl TestType {
 pub fn main() {
     let t1 = TestType::builder()
         .a_unsigned(23)
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .build().unwrap();
 
     print!("t1: {:#?}", t1);
@@ -25,12 +25,13 @@ pub fn main() {
     let t2 = TestType::builder()
         .a_unsigned(24)
         .a_opt_unsigned(13)
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .build().unwrap();
 
     print!("t1: {:#?}", t2);
 }
 
+#[cfg(test)]
 mod tests {
     use builder_m4cro::Builder;
 
@@ -153,7 +154,7 @@ mod tests {
 
         let t1_1 = TestType::builder()
         .a_unsigned(23)
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .build().unwrap();
 
         let t1_2 = TestType {
@@ -177,7 +178,7 @@ mod tests {
 
         let t1_1 = TestType::builder()
         .a_unsigned(23)
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .build().unwrap();
 
         let t1_2 = TestType {
@@ -192,7 +193,7 @@ mod tests {
         let t2_1 = TestType::builder()
         .a_unsigned(3)
         .a_opt_string("yyy".to_string())
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .build().unwrap();
 
         let t2_2 = TestType {
@@ -207,7 +208,7 @@ mod tests {
         let t3_1 = TestType::builder()
         .a_unsigned(113)
         .a_opt_unsigned(12)
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .build().unwrap();
 
         let t3_2 = TestType {
@@ -219,4 +220,5 @@ mod tests {
         assert_eq!(t3_1, t3_2);
 
     }
+
 }
