@@ -1,3 +1,6 @@
+# 0.3.1
+* Improve README
+
 # 0.3.0
 * allow "&str" parameters for String types as builder parameters
 * align the builder interfaces for 'Builder' and 'BuilderFromDefault'
