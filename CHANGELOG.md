@@ -1,3 +1,6 @@
+# 0.4.0
+* "&str" parameters for `Option<String>` types as builder parameters
+
 # 0.3.1
 * Improve README
 

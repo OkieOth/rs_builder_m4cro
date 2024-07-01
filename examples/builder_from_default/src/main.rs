@@ -30,6 +30,14 @@ pub fn main() {
         .build();
 
     print!("t2: {:#?}", t2);
+
+    let t3 = TestType::builder()
+        .a_unsigned(24)
+        .a_opt_unsigned(13)
+        .a_opt_string("xxx")
+        .build();
+
+    print!("t3: {:#?}", t3);
 }
 
 #[cfg(test)]

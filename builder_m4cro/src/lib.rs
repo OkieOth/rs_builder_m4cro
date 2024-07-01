@@ -31,6 +31,29 @@ fn is_string(field: &&syn::Field) -> bool {
     return false;
 }
 
+fn is_optional_string(field: &&syn::Field) -> bool {
+    let field_type = &field.ty;
+    if let syn::Type::Path(type_path) = field_type {
+        // Check if the path has segments, and the first segment is "Option"
+        if type_path.path.segments.len() == 1 {
+            let segment = type_path.path.segments.first().unwrap();
+            if segment.ident == "Option" {
+                // Check if the generic argument inside Option is String
+                if let syn::PathArguments::AngleBracketed(ref generic_args) = segment.arguments {
+                    if generic_args.args.len() == 1 {
+                        if let syn::GenericArgument::Type(syn::Type::Path(ref inner_type_path)) = generic_args.args.first().unwrap() {
+                            if let Some(inner_segment) = inner_type_path.path.segments.last() {
+                                return inner_segment.ident == "String";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+
 
 #[proc_macro_derive(Builder)]
 pub fn derive_builder(item: TokenStream) -> TokenStream {
@@ -121,7 +144,7 @@ pub fn derive_builder(item: TokenStream) -> TokenStream {
                     }
                 };
 
-                if is_string(&field) {
+                if is_optional_string(&field) {
                     quote! {
                         pub fn #field_name(&mut self, #field_name: &str) -> &mut Self {
                             self.#field_name = Some(#field_name.to_string());
@@ -129,10 +152,19 @@ pub fn derive_builder(item: TokenStream) -> TokenStream {
                         }
                     }
                 } else {
-                    quote! {
-                        pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
-                            self.#field_name = Some(#field_name);
-                            self
+                    if is_string(&field) {
+                        quote! {
+                            pub fn #field_name(&mut self, #field_name: &str) -> &mut Self {
+                                self.#field_name = Some(#field_name.to_string());
+                                self
+                            }
+                        }
+                    } else {
+                        quote! {
+                            pub fn #field_name(&mut self, #field_name: #field_type) -> &mut Self {
+                                self.#field_name = Some(#field_name);
+                                self
+                            }
                         }
                     }
                 }
@@ -253,7 +285,7 @@ pub fn derive_builder_from_default(item: TokenStream) -> TokenStream {
                 }
 
                 if is_optional {
-                    if is_string(&field) {
+                    if is_optional_string(&field) {
                         quote! {
                             pub fn #field_name(&mut self, #field_name: &str) -> &mut Self {
                                 self.#field_name = Some(Some(#field_name.to_string()));
