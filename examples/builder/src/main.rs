@@ -142,7 +142,7 @@ mod tests {
         assert_eq!(t1_1, t1_2);
 
         let t2_1 = TestType::builder()
-        .a_string("xxx".to_string())
+        .a_string("xxx")
         .a_unsigned(5)
         .build().unwrap();
 
@@ -202,7 +202,7 @@ mod tests {
 
         let t2_1 = TestType::builder()
         .a_unsigned(3)
-        .a_opt_string("yyy".to_string())
+        .a_opt_string("yyy")
         .a_string("xxx")
         .build().unwrap();
 
