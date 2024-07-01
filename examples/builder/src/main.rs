@@ -20,7 +20,7 @@ pub fn main() {
         .a_string("xxx")
         .build().unwrap();
 
-    print!("t1: {:#?}", t1);
+    println!("t1: {:#?}", t1);
 
     let t2 = TestType::builder()
         .a_unsigned(24)
@@ -28,7 +28,17 @@ pub fn main() {
         .a_string("xxx")
         .build().unwrap();
 
-    print!("t1: {:#?}", t2);
+    println!("t2: {:#?}", t2);
+
+
+    let t3 = TestType::builder()
+        .a_unsigned(24)
+        .a_opt_unsigned(13)
+        .a_string("xxx")
+        .a_opt_string("xxx1")
+        .build().unwrap();
+
+    println!("t3: {:#?}", t3);
 }
 
 #[cfg(test)]
